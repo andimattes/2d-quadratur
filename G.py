@@ -24,9 +24,8 @@ def generate(iterations):
     
     
 def drawPlot(it, ax, geo):
-    edge_size = 0.2 #0.25 #Größe der Dreiecke
+    edge_size = 0.25 #Größe der Dreiecke
     X, cells = dmsh.generate(geo, edge_size, show=False, max_steps=it, verbose=False) #X mit gesetzten Pkte, cells mit Dreiecken, erstellt quasi das gamze
-    #X, cells = optimesh.optimize_points_cells(X, cells, "CVT (full)", 1.0e-10, 100) # high quality
 
     ''' PLOT ''' 
     eps = 1.0e-10 #epsilon-umgebung 

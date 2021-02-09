@@ -18,7 +18,7 @@ def main(x0, y0, x1, y1, x2, y2):
         pnt = generalT(e, n) # Punkte des Einheitsdreiecks
         pts.append([pnt[0][0], pnt[1][0]]) # append: Array an ein Array anhängen
     
-    global det
+    global det #det wird nicht nur in dieser Fkt gebraucht
     det = np.linalg.det(matrix) # Determinante berechnen (fertige Fkt von numpy)
     
     res1 = 0
@@ -27,19 +27,19 @@ def main(x0, y0, x1, y1, x2, y2):
     
     lagrange = calcLagrange((x0, y0), (x1, y1), (x2, y2))
     for i in range(3):
-        alpha, err = quad(outerIntegral, a=0, b=1, args=(i, lagrange))
+        alpha, err = quad(outerIntegral, a=0, b=1, args=(i, lagrange)) #Gewichte
         
         print("alpha #" + str(i) + ": " + '{:.2f}'.format(alpha))
         
         res1 += alpha * fxy1(pts[i][0], pts[i][1]) # aufsummieren
-        res2 += alpha * fxy2(pts[i][0], pts[i][1]) # aufsummieren
-        res3 += alpha * fxy3(pts[i][0], pts[i][1]) # aufsummieren
+        res2 += alpha * fxy2(pts[i][0], pts[i][1]) 
+        res3 += alpha * fxy3(pts[i][0], pts[i][1]) 
         print()
         
-    print("Ergebnis1: " + '{:.4f}'.format(res1)) # aufsummiertes Endergebnis
-    print("Ergebnis2: " + '{:.4f}'.format(res2)) # aufsummiertes Endergebnis
-    print("Ergebnis3: " + '{:.4f}'.format(res3)) # aufsummiertes Endergebnis
-    return res2
+    print("Ergebnis0: " + '{:.4f}'.format(res1)) # aufsummiertes Endergebnis
+    print("Ergebnis1: " + '{:.4f}'.format(res2)) 
+    print("Ergebnis2: " + '{:.4f}'.format(res3)) 
+    return res2 #für g
 
 
 def outerIntegral(x, i, lagrange):
@@ -49,17 +49,17 @@ def outerIntegral(x, i, lagrange):
 
 def fxy1(x, y):
     fxy = pow(x, 2) + pow(y, 2) 
-    print('fxy1: ' + str(fxy))
+    print('fxy0: ' + str(fxy))
     return fxy
     
 def fxy2(x, y):
     fxy = sin(x) + cos(y)
-    print('fxy2: ' + str(fxy))
+    print('fxy1: ' + str(fxy))
     return fxy
 
 def fxy3(x, y):
     fxy = sqrt(pow((x+1)*(y+1),2)-1)
-    print('fxy3: ' + str(fxy))
+    print('fxy2: ' + str(fxy))
     return fxy
 
 
@@ -75,7 +75,7 @@ def innerIntegral(y, x, i, lagrange):
     return li * abs(det)
 
 
-def calcLagrange(xy0, xy1, xy2):
+def calcLagrange(xy0, xy1, xy2): # Lagrange-Basis
     mtrx = np.array([[1, xy0[0], xy0[1]], [1, xy1[0], xy1[1]], [1, xy2[0], xy2[1]]])
     
     l0 = np.array([1,0,0])

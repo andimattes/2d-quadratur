@@ -37,13 +37,13 @@ def main():
         print("alpha #" + str(i) + ": " + '{:.2f}'.format(alpha))
         
         res1 += alpha * fxy1(pts[i][0], pts[i][1]) # aufsummieren
-        res2 += alpha * fxy2(pts[i][0], pts[i][1]) # aufsummieren
-        res3 += alpha * fxy3(pts[i][0], pts[i][1]) # aufsummieren
+        res2 += alpha * fxy2(pts[i][0], pts[i][1]) 
+        res3 += alpha * fxy3(pts[i][0], pts[i][1]) 
         print()
 
-    print("Ergebnis1: " + '{:.4f}'.format(res1)) # aufsummiertes Endergebnis
-    print("Ergebnis2: " + '{:.4f}'.format(res2)) # aufsummiertes Endergebnis
-    print("Ergebnis3: " + '{:.4f}'.format(res3)) # aufsummiertes Endergebnis
+    print("Ergebnis0: " + '{:.4f}'.format(res1)) # aufsummiertes Endergebnis
+    print("Ergebnis1: " + '{:.4f}'.format(res2)) 
+    print("Ergebnis2: " + '{:.4f}'.format(res3)) 
         
         
 def outerIntegral(x, i, lagrange):
@@ -53,22 +53,22 @@ def outerIntegral(x, i, lagrange):
 
 def fxy1(x, y):
     fxy = pow(x, 2) + pow(y, 2) 
-    print('fxy1: ' + str(fxy))
+    print('fxy0: ' + str(fxy))
     return fxy
     
 def fxy2(x, y):
     fxy = sin(x) + cos(y) - sin(x*x) + y*y - x*y - 0.17
-    print('fxy2: ' + str(fxy))
+    print('fxy1: ' + str(fxy))
     return fxy
 
 def fxy3(x, y):
     fxy = sqrt(pow((x+1)*(y+1),2)-1)
-    print('fxy3: ' + str(fxy))
+    print('fxy2: ' + str(fxy))
     return fxy
 
 
 def innerIntegral(y, x, i, lagrange):    
-    li = 0 # lagrange basis mit 6 Punkten von allgemeinen Dreieck
+    li = 0 
     
     if i == 0: 
         li = lagrange[0][0] + lagrange[0][1]*x + lagrange[0][2]*x*x - lagrange[0][3]*y + lagrange[0][4]*y*y + lagrange[0][5]*x*y
