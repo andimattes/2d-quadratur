@@ -1,47 +1,70 @@
 import numpy as np
-from scipy.integrate.quadpack import dblquad
-from scipy.spatial.distance import euclidean
-from math import sqrt
+from scipy.integrate import quad
+from math import cos, sin, sqrt
 
+pts = (0, 0), (1, 0), (0, 1), (0.5, 0), (0, 0.5), (0.5, 0.5)
 
 def main():
-    X0, X1, X2, X3, X4, X5 = calcLagrange((0, 0), (1, 0), (0, 1), (0.5, 0), (0, 0.5), (0.5, 0.5)) # Lagrange Basen berechnen
-    lagrange = [X0, X1, X2, X3, X4, X5]
+    res1 = 0
+    res2 = 0
+    res3 = 0
     
-    res = 0
+    lagrange = calcLagrange(pts) # Lagrange Basen berechnen       
     for i in range(6): # Laufvariable für i = 0 bis 5
-        ans, err = dblquad(integrand, a=0, b=1, gfun=0, hfun=1/2, args=[i, lagrange]) # Integralfunktion, welche fkt, äußere schranken, innere schranken, Laufvariable (für benutzte fkt)
-        res += abs(ans) # aufzsummieren
-        print("i=" + str(i) + ": " + '{:.4f}'.format(abs(ans))) # jedes Integral in Laufvariable ausgegeben
+        alpha, err = quad(outerIntegral, a=0, b=1, args=(i, lagrange)) # Integralfunktion, welche fkt, äußere schranken, innere schranken, Laufvariable (für benutzte fkt)
+        
+        print("alpha #" + str(i) + ": " + '{:.4f}'.format(abs(alpha))) # jedes Integral in Laufvariable ausgegeben
+        
+        res1 += alpha * fxy1(pts[i][0], pts[i][1]) # aufsummieren
+        res2 += alpha * fxy2(pts[i][0], pts[i][1]) # aufsummieren
+        res3 += alpha * fxy3(pts[i][0], pts[i][1]) # aufsummieren
+        print()
+        
+    print("Ergebnis1: " + '{:.4f}'.format(res1)) # aufsummiertes Endergebnis
+    print("Ergebnis2: " + '{:.4f}'.format(res2)) # aufsummiertes Endergebnis
+    print("Ergebnis3: " + '{:.4f}'.format(res3)) # aufsummiertes Endergebnis
 
-    print("Ergebnis: " + '{:.4f}'.format(res)) # aufsummiertes Endergebnis
+
+def outerIntegral(x, i, lagrange):
+    ans, abserr = quad(innerIntegral, a=0, b=1-x, args=(x, i, lagrange))
+    return ans
 
 
-def integrand(y, x, i, lagrange): # inneres vom Integral (6 Stützstellen)
-    fxy = 0
+def fxy1(x, y):
+    fxy = pow(x, 2) + pow(y, 2) 
+    print('fxy1: ' + str(fxy))
+    return fxy
+    
+def fxy2(x, y):
+    fxy = sin(x) + cos(y) - sin(x*x) + y*y - x*y - 0.17
+    print('fxy2: ' + str(fxy))
+    return fxy
+
+def fxy3(x, y):
+    fxy = sqrt(pow((x+1)*(y+1),2)-1)
+    print('fxy3: ' + str(fxy))
+    return fxy
+
+
+def innerIntegral(y, x, i, lagrange): # inneres vom Integral (6 Stützstellen)
     li = 0
     if i == 0: 
         li = lagrange[0][0] + lagrange[0][1]*x + lagrange[0][2]*x*x - lagrange[0][3]*y + lagrange[0][4]*y*y + lagrange[0][5]*x*y
-        fxy = euclideanNorm(0,0)
     elif i == 1: 
         li = lagrange[1][0] + lagrange[1][1]*x + lagrange[1][2]*x*x - lagrange[1][3]*y + lagrange[1][4]*y*y + lagrange[1][5]*x*y
-        fxy = euclideanNorm(1,0)
     elif i == 2: 
         li = lagrange[2][0] + lagrange[2][1]*x + lagrange[2][2]*x*x - lagrange[2][3]*y + lagrange[2][4]*y*y + lagrange[2][5]*x*y
-        fxy = euclideanNorm(0,1)
     elif i == 3: 
         li = lagrange[3][0] + lagrange[3][1]*x + lagrange[3][2]*x*x - lagrange[3][3]*y + lagrange[3][4]*y*y + lagrange[3][5]*x*y
-        fxy = euclideanNorm(1/2,0)
     elif i == 4: 
         li = lagrange[4][0] + lagrange[4][1]*x + lagrange[4][2]*x*x - lagrange[4][3]*y + lagrange[4][4]*y*y + lagrange[4][5]*x*y
-        fxy = euclideanNorm(0,1/2)
     elif i == 5: 
         li = lagrange[5][0] + lagrange[5][1]*x + lagrange[5][2]*x*x - lagrange[5][3]*y + lagrange[5][4]*y*y + lagrange[5][5]*x*y
-        fxy = euclideanNorm(1/2,1/2)
-    return fxy * li
+    return li
 
 
-def calcLagrange(xy0, xy1, xy2, xy3, xy4, xy5):
+def calcLagrange(pts):
+    xy0, xy1, xy2, xy3, xy4, xy5 = pts[0], pts[1], pts[2], pts[3], pts[4], pts[5]
     matrix = np.array([
         [1, xy0[0], xy0[0]*xy0[0], xy0[1], xy0[1]*xy0[1], xy0[0]*xy0[1]], 
         [1, xy1[0], xy1[0]*xy1[0], xy1[1], xy1[1]*xy1[1], xy1[0]*xy1[1]], 
@@ -64,11 +87,6 @@ def calcLagrange(xy0, xy1, xy2, xy3, xy4, xy5):
     X4 = np.linalg.inv(matrix).dot(l4)
     X5 = np.linalg.inv(matrix).dot(l5)
     return X0, X1, X2, X3, X4, X5
-
-
-def euclideanNorm(x, y):
-    return euclidean(x, y)
-    return sqrt(x*x + y*y)
 
 
 main()

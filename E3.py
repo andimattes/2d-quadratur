@@ -1,41 +1,65 @@
-from scipy.integrate.quadpack import dblquad
-from scipy.spatial.distance import euclidean
+from scipy.integrate import quad
 from math import sqrt
 import numpy as np
+from math import sin, cos, sqrt
 
-
-
+pts = (0, 0), (1, 0), (0, 1)
 
 def main():
-    res = 0    
+    res1 = 0
+    res2 = 0
+    res3 = 0
+        
+    lagrange = calcLagrange(pts)
     
-    X0, X1, X2 = calcLagrange((0, 0), (1, 0), (0, 1))
-    lagrange = [X0, X1, X2]
     for i in range(3): # Laufvariable für i = 0 bis 5
-        ans, err = dblquad(integrand, a=0, b=1, gfun=0, hfun=1/2, args=[i, lagrange]) # Integralfunktion, welche fkt, äußere schranken, innere schranken, Laufvariable (für benutzte fkt)
-        res += abs(ans) # aufzsummieren
-        print("i=" + str(i) + ": " + '{:.4f}'.format(abs(ans))) # jedes Integral in Laufvariable ausgegeben
-        #print("Err: " + str(err))
+        alpha, abserr = quad(outerIntegral, a=0, b=1, args=(i, lagrange))
+        
+        print("alpha #" + str(i) + ": " + '{:.4f}'.format(abs(alpha))) # jedes Integral in Laufvariable ausgegeben
+                
+        res1 += alpha * fxy1(pts[i][0], pts[i][1]) # aufsummieren
+        res2 += alpha * fxy2(pts[i][0], pts[i][1]) # aufsummieren
+        res3 += alpha * fxy3(pts[i][0], pts[i][1]) # aufsummieren
+        print()
 
-    print("Ergebnis: " + '{:.4f}'.format(res)) # aufsummiertes Endergebnis
+    print("Ergebnis1: " + '{:.4f}'.format(res1)) # aufsummiertes Endergebnis
+    print("Ergebnis2: " + '{:.4f}'.format(res2)) # aufsummiertes Endergebnis
+    print("Ergebnis3: " + '{:.4f}'.format(res3)) # aufsummiertes Endergebnis
 
 
-def integrand(y, x, i, lagrange):   # Inneres vom Integral
-    fxy = 0
+def outerIntegral(x, i, lagrange):
+    ans, abserr = quad(innerIntegral, a=0, b=1-x, args=(x, i, lagrange))
+    return ans
+
+
+def fxy1(x, y):
+    fxy = pow(x, 2) + pow(y, 2) 
+    print('fxy1: ' + str(fxy))
+    return fxy
+    
+def fxy2(x, y):
+    fxy = sin(x) + cos(y) 
+    print('fxy2: ' + str(fxy))
+    return fxy
+
+def fxy3(x, y):
+    fxy = sqrt(pow((x+1)*(y+1),2)-1)
+    print('fxy3: ' + str(fxy))
+    return fxy
+
+def innerIntegral(y, x, i, lagrange):   # Inneres vom Integral
     li = 0
     if i == 0: 
         li = lagrange[0][0] + lagrange[0][1] * x + lagrange[0][2] * y
-        fxy = euclideanNorm(0,0)
     elif i == 1: 
         li = lagrange[1][0] + lagrange[1][1] * x + lagrange[1][2] * y
-        fxy = euclideanNorm(1,0)
     elif i == 2: 
         li = lagrange[2][0] + lagrange[2][1] * x + lagrange[2][2] * y
-        fxy = euclideanNorm(0,1)
-    return fxy * li
+    return li
 
 
-def calcLagrange(xy0, xy1, xy2):
+def calcLagrange(pts):
+    xy0, xy1, xy2 = pts[0], pts[1], pts[2]
     matrix = np.array([[1, xy0[0], xy0[1]], [1, xy1[0], xy1[1]], [1, xy2[0], xy2[1]]])
     
     l0 = np.array([1,0,0])
@@ -46,11 +70,6 @@ def calcLagrange(xy0, xy1, xy2):
     X1 = np.linalg.inv(matrix).dot(l1)
     X2 = np.linalg.inv(matrix).dot(l2)
     return X0, X1, X2
-
-
-def euclideanNorm(x, y):
-    return euclidean(x, y)
-    return sqrt(x*x + y*y)
 
 
 main()
