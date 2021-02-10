@@ -9,16 +9,16 @@ def main():
 
 def generate(iterations):
     fig = plt.figure() # Leeres pyplot sheet
-    index = 231 # 231 --> 2 spalten, 3 zeilen, 1 = links oben
+    position = 231 # 231 --> 2 spalten, 3 zeilen, 1 = links oben
     
     geo = dmsh.Union( #fertige Fkt von dmsh: 2 Quadrate werden 'übereinander gelegt'
         [dmsh.Rectangle(-1.0, +0.5, -1.0, +0.5), dmsh.Rectangle(-0.5, +1.0, -0.5, +1.0)] #fertige Fkt von dmsh: erstellt Rechteck mit Längen als Parameter
     )
         
     for it in iterations: #für jedes Element in iterations (1,10,25,50)
-        ax = fig.add_subplot(index) # Subplot hinzufügen
+        ax = fig.add_subplot(position) # Subplot hinzufügen
         drawPlot(it, ax, geo)
-        index += 1 # = nächstes feld im plot
+        position += 1 # = nächstes feld im plot
     
     plt.show() # Anzeigen
     
@@ -34,27 +34,27 @@ def drawPlot(it, ax, geo):
     x, y, z = geo._get_xyz() #pkte von geo 
     ax.contour(x, y, z, levels=[0.0], colors="k") # Original shape (schwarzer Rand)
     
-    ax.plot(X[is_inside, 0], X[is_inside, 1], ".")  #
-    ax.triplot(X[:, 0], X[:, 1], cells)
+    ax.plot(X[is_inside, 0], X[is_inside, 1], ".")  #plottet Punkte
+    ax.triplot(X[:, 0], X[:, 1], cells) # verbindet Punkte (damit Dreiecke entstehen), cells gibt den Wert für : an
     
     pts = []
-    for x, y in zip(X[:, 0], X[:, 1]):
-        pts.append((ff(x), ff(y)))    
+    for x, y in zip(X[:, 0], X[:, 1]): # zip = macht aus 2 Listen Tupe (wie Zipverschluss)
+        pts.append((ff(x), ff(y))) # damit alle x,y als Tupel in einer liste sind, ff formartiert (seihe unten)   
     
     triangles = []
-    for cell in cells:        
-        obj = [pts[cell[0]], pts[cell[1]], pts[cell[2]]]
-        triangles.append(obj)
+    for cell in cells: # ein großes array mit vielen kleinen arrays (für jedes Dreieck) zu je 3 Punkten, 3 Punkte bestehen aus Indizes der Deiecke        
+        tria = [pts[cell[0]], pts[cell[1]], pts[cell[2]]] # in pts steht jeweils ein zahlentupel mit x,y --> tria = Punkte in einem Dreieck
+        triangles.append(tria) # triangles --> sind alle Dreiecke mit x,y Punkten (3) nacheinander
 
     res = 0
-    for tria in triangles:
-        erg = F3.main(tria[0][0], tria[0][1], tria[1][0], tria[1][1], tria[2][0], tria[2][1])
+    for tria in triangles: # tria = element von triangles 
+        erg = F3.main(tria[0][0], tria[0][1], tria[1][0], tria[1][1], tria[2][0], tria[2][1]) #zuerst x Werte und dann y Werte der drei Eckpunkte -> abeite weiter mit F3 
         res += erg
     
-    print("Iteration #" + str(it) + ": " + '{:.4f}'.format(res))
+    print("\n\n\nIteration #" + str(it) + ": " + '{:.4f}'.format(res))
     print("Number of triangles: " + str(len(triangles)))
     print()
-    print("------")
+    
 
     # Format
     ax.axis("square") # Macht die Plots quadratisch
@@ -62,6 +62,6 @@ def drawPlot(it, ax, geo):
 
 
 def ff(x):
-    return float("{:.5f}".format(x))
+    return float("{:.5f}".format(x)) # 5 Nachkommastellen
 
 main()
