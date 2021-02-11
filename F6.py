@@ -16,10 +16,10 @@ matrix =  np.array([[x1 - x0, x2 - x0], [y1 - y0, y2 - y0]])
 det = 0
 
 def main():
-    arr = [[0, 0], [0, 1], [1, 0], [1/2, 0], [1/2, 1/2], [0, 1/2]] # Einheitsdreieck mit 6 Stützstellen
+    arr = [[0, 0], [0, 1], [1, 0], [1/2, 0], [1/2, 1/2], [0, 1/2]] 
     
-    pts = [] # leeres Array
-    for e, n in arr: # e und n sind Punkte vom Einheitsdreieck
+    pts = [] 
+    for e, n in arr: 
         pnt = generalT(e, n)
         pts.append([pnt[0][0], pnt[1][0]]) 
        
@@ -36,12 +36,12 @@ def main():
         
         print("alpha #" + str(i) + ": " + '{:.2f}'.format(alpha))
         
-        res1 += alpha * fxy1(pts[i][0], pts[i][1]) # aufsummieren
+        res1 += alpha * fxy1(pts[i][0], pts[i][1]) 
         res2 += alpha * fxy2(pts[i][0], pts[i][1]) 
         res3 += alpha * fxy3(pts[i][0], pts[i][1]) 
         print()
 
-    print("Ergebnis0: " + '{:.4f}'.format(res1)) # aufsummiertes Endergebnis
+    print("Ergebnis0: " + '{:.4f}'.format(res1)) 
     print("Ergebnis1: " + '{:.4f}'.format(res2)) 
     print("Ergebnis2: " + '{:.4f}'.format(res3)) 
         
@@ -52,12 +52,12 @@ def outerIntegral(x, i, lagrange):
 
 
 def fxy1(x, y):
-    fxy = pow(x, 2) + pow(y, 2) 
+    fxy = pow(x, 2) + pow(y, 2)
     print('fxy0: ' + str(fxy))
     return fxy
     
 def fxy2(x, y):
-    fxy = sin(x) + cos(y) - sin(x*x) + y*y - x*y - 0.17
+    fxy = - 4*x - 2*y + 3 + 2*x*x - 5*x*y
     print('fxy1: ' + str(fxy))
     return fxy
 
@@ -107,6 +107,7 @@ def calcLagrange(xy0, xy1, xy2, xy3, xy4, xy5):
     X3 = np.linalg.inv(matrix).dot(l3)
     X4 = np.linalg.inv(matrix).dot(l4)
     X5 = np.linalg.inv(matrix).dot(l5)
+
     return X0, X1, X2, X3, X4, X5
     
 

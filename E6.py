@@ -5,24 +5,25 @@ from math import cos, sin, sqrt
 pts = (0, 0), (1, 0), (0, 1), (0.5, 0), (0, 0.5), (0.5, 0.5)
 
 def main():
+    res0 = 0
     res1 = 0
     res2 = 0
-    res3 = 0
     
-    lagrange = calcLagrange(pts) # Lagrange Basen berechnen       
-    for i in range(6): # Laufvariable für i = 0 bis 5
-        alpha, err = quad(outerIntegral, a=0, b=1, args=(i, lagrange)) # Gewichte
+    lagrange = calcLagrange(pts)   
+    
+    for i in range(6): 
+        alpha, abserr = quad(outerIntegral, a=0, b=1, args=(i, lagrange)) 
         
-        print("alpha #" + str(i) + ": " + '{:.4f}'.format(abs(alpha))) 
+        print("alpha #" + str(i) + ": " + '{:.4f}'.format(alpha)) 
         
-        res1 += alpha * fxy1(pts[i][0], pts[i][1]) # aufsummieren
+        res0 += alpha * fxy0(pts[i][0], pts[i][1]) 
+        res1 += alpha * fxy1(pts[i][0], pts[i][1]) 
         res2 += alpha * fxy2(pts[i][0], pts[i][1]) 
-        res3 += alpha * fxy3(pts[i][0], pts[i][1]) 
         print()
         
-    print("Ergebnis0: " + '{:.4f}'.format(res1)) # aufsummiertes Endergebnis
-    print("Ergebnis1: " + '{:.4f}'.format(res2)) 
-    print("Ergebnis2: " + '{:.4f}'.format(res3)) 
+    print("Ergebnis0: " + '{:.4f}'.format(res0)) 
+    print("Ergebnis1: " + '{:.4f}'.format(res1)) 
+    print("Ergebnis2: " + '{:.4f}'.format(res2)) 
 
 
 def outerIntegral(x, i, lagrange):
@@ -30,23 +31,23 @@ def outerIntegral(x, i, lagrange):
     return ans
 
 
-def fxy1(x, y):
+def fxy0(x, y):
     fxy = pow(x, 2) + pow(y, 2) 
     print('fxy0: ' + str(fxy))
     return fxy
     
-def fxy2(x, y):
-    fxy = sin(x) + cos(y) - sin(x*x) + y*y - x*y - 0.17
+def fxy1(x, y):
+    fxy = sin(x) + cos(y)
     print('fxy1: ' + str(fxy))
     return fxy
 
-def fxy3(x, y):
-    fxy = sqrt(pow((x+1)*(y+1),2)-1)
+def fxy2(x, y):
+    fxy = - 4*x - 2*y + 3 + 2*x*x - 5*x*y
     print('fxy2: ' + str(fxy))
     return fxy
 
 
-def innerIntegral(y, x, i, lagrange): # inneres Integral 
+def innerIntegral(y, x, i, lagrange): 
     li = 0
     if i == 0: 
         li = lagrange[0][0] + lagrange[0][1]*x + lagrange[0][2]*x*x - lagrange[0][3]*y + lagrange[0][4]*y*y + lagrange[0][5]*x*y
@@ -63,7 +64,7 @@ def innerIntegral(y, x, i, lagrange): # inneres Integral
     return li
 
 
-def calcLagrange(pts): # Lagrange-Basis
+def calcLagrange(pts): 
     xy0, xy1, xy2, xy3, xy4, xy5 = pts[0], pts[1], pts[2], pts[3], pts[4], pts[5]
     matrix = np.array([
         [1, xy0[0], xy0[0]*xy0[0], xy0[1], xy0[1]*xy0[1], xy0[0]*xy0[1]], 
@@ -86,6 +87,7 @@ def calcLagrange(pts): # Lagrange-Basis
     X3 = np.linalg.inv(matrix).dot(l3)
     X4 = np.linalg.inv(matrix).dot(l4)
     X5 = np.linalg.inv(matrix).dot(l5)
+
     return X0, X1, X2, X3, X4, X5
 
 

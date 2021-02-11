@@ -3,43 +3,44 @@ from math import cos, sin, sqrt
 import numpy as np
 
 
-x0, y0 = 2, 4 # Pkt (X0,Y0) von bel Dreieck
+x0, y0 = 2, 4 
 x1, y1 = 4, 5
 x2, y2 = 5, 3
 
-matrix =  np.array([[x1 - x0, x2 - x0], [y1 - y0, y2 - y0]]) # Matrix aus affiner Abbildung
+matrix =  np.array([[x1 - x0, x2 - x0], [y1 - y0, y2 - y0]]) 
 det = 0
 
 def main(x0, y0, x1, y1, x2, y2):
-    arr = [[0, 0], [0, 1], [1, 0]] # Punkte des Einheitsdreiecks
+    arr = [[0, 0], [0, 1], [1, 0]] 
     
-    pts = [] # leeres Array definieren
+    pts = [] 
     for e, n in arr:
-        pnt = generalT(e, n) # Punkte des Einheitsdreiecks
-        pts.append([pnt[0][0], pnt[1][0]]) # append: Array an ein Array anhängen
+        pnt = generalT(e, n) 
+        pts.append([pnt[0][0], pnt[1][0]]) 
     
-    global det #det wird nicht nur in dieser Fkt gebraucht
-    det = np.linalg.det(matrix) # Determinante berechnen (fertige Fkt von numpy)
-    
+    global det 
+    det = np.linalg.det(matrix) 
+
     res1 = 0
     res2 = 0
     res3 = 0
     
     lagrange = calcLagrange((x0, y0), (x1, y1), (x2, y2))
+    
     for i in range(3):
-        alpha, err = quad(outerIntegral, a=0, b=1, args=(i, lagrange)) #Gewichte
+        alpha, err = quad(outerIntegral, a=0, b=1, args=(i, lagrange))
         
         print("alpha #" + str(i) + ": " + '{:.2f}'.format(alpha))
         
-        res1 += alpha * fxy1(pts[i][0], pts[i][1]) # aufsummieren
+        res1 += alpha * fxy1(pts[i][0], pts[i][1])
         res2 += alpha * fxy2(pts[i][0], pts[i][1]) 
         res3 += alpha * fxy3(pts[i][0], pts[i][1]) 
         print()
         
-    print("Ergebnis0: " + '{:.4f}'.format(res1)) # aufsummiertes Endergebnis
+    print("Ergebnis0: " + '{:.4f}'.format(res1)) 
     print("Ergebnis1: " + '{:.4f}'.format(res2)) 
     print("Ergebnis2: " + '{:.4f}'.format(res3)) 
-    return res2 #für g
+    return res2      #für g
 
 
 def outerIntegral(x, i, lagrange):
@@ -75,7 +76,7 @@ def innerIntegral(y, x, i, lagrange):
     return li * abs(det)
 
 
-def calcLagrange(xy0, xy1, xy2): # Lagrange-Basis
+def calcLagrange(xy0, xy1, xy2): 
     mtrx = np.array([[1, xy0[0], xy0[1]], [1, xy1[0], xy1[1]], [1, xy2[0], xy2[1]]])
     
     l0 = np.array([1,0,0])
@@ -88,12 +89,12 @@ def calcLagrange(xy0, xy1, xy2): # Lagrange-Basis
     return X0, X1, X2
     
 
-def generalT(e, n):    # affine Abbildung
-    t1 = np.array([[x0], [y0]]) # 1. Term
-    t2 = matrix                 # 2. term
-    t3 = np.array([[e], [n]])   # 3. Term
+def generalT(e, n):    
+    t1 = np.array([[x0], [y0]])
+    t2 = matrix                
+    t3 = np.array([[e], [n]])  
     
-    x = t1 + np.dot(t2, t3) # dot ist Vektor-Matrix Multiplikation und dann wird anderer vektor addiert
+    x = t1 + np.dot(t2, t3) 
     return x
 
 
